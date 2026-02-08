@@ -6,7 +6,7 @@ import {
 
 export class RegisterRequest {
 
-	@IsString({ message: 'Username must be a string.' })
+@IsString({ message: 'Username must be a string.' })
 @IsNotEmpty({ message: 'Username is required.' })
 username: string;
 
