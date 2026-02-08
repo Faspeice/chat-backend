@@ -1,0 +1,74 @@
+
+generator client {
+  provider = "prisma-client"
+  output          = "../src/generated/prisma"
+  moduleFormat  = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int      @id @default(autoincrement()) @map("user_id")
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  chatMembers  ChatMember[]
+  messagesSent Message[]     @relation("MessageSender")
+  messagesRead MessageRead[]
+
+  @@map("users")
+}
+
+model Chat {
+  id        Int      @id @default(autoincrement()) @map("chat_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  members   ChatMember[]
+  messages  Message[]
+
+  @@map("chats")
+}
+
+model ChatMember {
+  chatId   Int      @map("chat_id")
+  userId   Int      @map("user_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  chat     Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([chatId, userId])
+  @@index([userId, chatId])
+  @@map("chat_members")
+}
+
+model Message {
+  id        Int      @id @default(autoincrement()) @map("message_id")
+  chatId    Int      @map("chat_id")
+  senderId  Int      @map("sender_id")
+  content   String
+  sentAt    DateTime @default(now()) @map("sent_at")
+
+  chat     Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  sender   User @relation("MessageSender", fields: [senderId], references: [id])
+  reads    MessageRead[]
+
+  @@map("messages")
+}
+
+model MessageRead {
+  messageId Int      @map("message_id")
+  userId    Int      @map("user_id")
+  readAt    DateTime @default(now()) @map("read_at")
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([messageId, userId])
+  @@index([userId, messageId])
+  @@map("message_reads")
+}
