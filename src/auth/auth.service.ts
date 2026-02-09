@@ -103,6 +103,10 @@ async refresh(req: Request, res: Response) {
     }
 }
 
+async logout(res: Response) {
+  this.setCookie(res, 'refreshToken', new Date(0));
+  
+}
 private auth (res: Response, id: string) {
   const {accessToken, refreshToken} = this.generateTokens(id);
   const ttlMs = parseDurationToMs(this.JWT_REFRESH_TOKEN_TTL);
