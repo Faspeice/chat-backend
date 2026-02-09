@@ -1,4 +1,4 @@
-import { Injectable,ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable,ConflictException, NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterRequest } from './dto/register.dto';
@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import type { JwtPayload } from './interfaces/jwt.interface';
 import { LoginRequest } from './dto/login.dto';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { isDev } from 'src/utils/is-dev.utils';
 import { parseDurationToMs } from 'src/utils/time.utils';
 
@@ -71,6 +71,36 @@ export class AuthService {
     }
 
     return this.auth(res,user.id.toString());
+}
+
+async refresh(req: Request, res: Response) {
+    const refreshToken = req.cookies['refreshToken'];
+
+    if (!refreshToken) {
+        throw new UnauthorizedException('Invalid refresh token');
+    }
+    const payload: JwtPayload = await this.jwtService.verifyAsync(refreshToken);
+
+    if(payload) {
+      const userId = Number(payload.id);
+  
+    if (isNaN(userId)) {
+    throw new BadRequestException('Invalid user ID');
+    }
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          id: true,
+        },
+      })
+      if (!user) {
+        throw new NotFoundException('User not found');
+    }
+
+    return this.auth(res,user.id.toString());
+    }
 }
 
 private auth (res: Response, id: string) {

@@ -1,8 +1,8 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterRequest } from './dto/register.dto';
 import { LoginRequest } from './dto/login.dto';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -18,5 +18,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Res({passthrough: true}) res: Response,@Body() dto: LoginRequest) {
     return await this.authService.login(res,dto);
+}
+
+@Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Req() req: Request,@Res({passthrough: true}) res: Response) {
+    return await this.authService.refresh(req,res);
 }
 }
