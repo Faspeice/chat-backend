@@ -1,8 +1,11 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterRequest } from './dto/register.dto';
 import { LoginRequest } from './dto/login.dto';
 import type { Request, Response } from 'express';
+import { Authorization } from './decorators/authorization.decorator';
+import { Authorized } from './decorators/authorized.decorator';
+import type { User } from 'src/generated/prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -20,15 +23,22 @@ export class AuthController {
     return await this.authService.login(res,dto);
 }
 
-@Post('refresh')
+  @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() req: Request,@Res({passthrough: true}) res: Response) {
     return await this.authService.refresh(req,res);
 }
 
-@Post('logout')
+  @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Res({passthrough: true}) res: Response) {
     return await this.authService.logout(res);
 }
+
+  @Authorization()
+  @Get('@me')
+  @HttpCode(HttpStatus.OK)
+  async me(@Authorized('id') id: string){
+    return { id } 
+  }
 }

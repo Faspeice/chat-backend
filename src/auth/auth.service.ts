@@ -73,6 +73,7 @@ export class AuthService {
     return this.auth(res,user.id.toString());
 }
 
+
 async refresh(req: Request, res: Response) {
     const refreshToken = req.cookies['refreshToken'];
 
@@ -107,6 +108,26 @@ async logout(res: Response) {
   this.setCookie(res, 'refreshToken', new Date(0));
   
 }
+
+async validate(id: string) {
+  const userId = Number(id);
+  if (isNaN(userId)) {
+    throw new BadRequestException('Invalid user ID');
+  }
+    const user = await this.prismaService.user.findUnique({
+        where: {
+            id: userId,
+        },
+    });
+    
+    if (!user) {
+        throw new NotFoundException('User not found');
+    }
+    
+    return user;
+}
+
+
 private auth (res: Response, id: string) {
   const {accessToken, refreshToken} = this.generateTokens(id);
   const ttlMs = parseDurationToMs(this.JWT_REFRESH_TOKEN_TTL);
