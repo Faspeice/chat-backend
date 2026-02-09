@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { UserRepository } from './user.repository';
+import { UserResponse } from './dto/user-response.dto';
 
 @Injectable()
 export class UserService {
-    constructor(private readonly userRepository: UserRepository) {}
+    constructor(private readonly userRepository: UserRepository) { }
     async findUsersByUsername(username: string, currentUserId: number) {
-        return await this.userRepository.searchUsersByUsername(username, currentUserId); 
+        const users = await this.userRepository.searchUsersByUsername(username, currentUserId);
+
+        return users.map(user => new UserResponse(user.id, user.username));
+    }
 }
-}
+
