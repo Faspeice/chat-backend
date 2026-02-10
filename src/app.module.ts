@@ -5,12 +5,13 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UserModule, ConfigModule.forRoot({
+  imports: [PrismaModule, AuthModule, UserModule, ChatModule, ConfigModule.forRoot({
   isGlobal: true,
   envFilePath: '.env',
-})],
+}), ChatModule],
   controllers: [AppController],
   providers: [AppService],
 })
