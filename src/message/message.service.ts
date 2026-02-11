@@ -93,8 +93,8 @@ export class MessageService {
 
       const messagesWithReadStatus = messages.map((msg) => {
         const isRead =
-          msg.senderId === numericChatId ||
-          (msg.reads && msg.reads.some((read) => read.userId === numericChatId));
+          msg.senderId === nummericUserId ||
+          (msg.reads && msg.reads.some((read) => read.userId === nummericUserId));
 
         return plainToInstance(MessageResponseDto, {
           id: msg.id,
