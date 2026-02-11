@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { Authorization } from 'src/auth/decorators/authorization.decorator';
 import { Authorized } from 'src/auth/decorators/authorized.decorator';
@@ -15,6 +15,15 @@ export class ChatController {
     @Authorized('id') currentUserId: number,
     @Body() createChatDto: CreateChatRequest
   ) {
-    return this.chatService.createChat(currentUserId, createChatDto.participantId);
+    return await this.chatService.createChat(currentUserId, createChatDto.participantId);
+  }
+
+  @Authorization()
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async getChats(
+    @Authorized('id') currentUserId: number,
+  ) {
+    return this.chatService.getChats(currentUserId);
   }
 }

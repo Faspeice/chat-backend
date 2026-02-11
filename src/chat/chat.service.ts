@@ -7,8 +7,20 @@ import { UserRepository } from 'src/user/user.repository';
 
 @Injectable()
 export class ChatService {
-  private readonly logger = new Logger(ChatService.name);
   constructor(private readonly chatRepository: ChatRepository, private readonly userRepository: UserRepository) { }
+  async getChats(currentUserId: number) {
+    try{
+    const chats = await this.chatRepository.findChats(currentUserId);
+    this.logger.log("Successfully received chats");
+    return chats.map(chat => new ChatResponse(chat.id, chat.members.map(member => new ChatMebmerDto(member.user.id, member.user.username, member.joinedAt))));
+    }
+    catch (e) {
+      this.logger.error("Failed to get chats");
+      throw e;
+    }
+  }
+  private readonly logger = new Logger(ChatService.name);
+  
   async createChat(firstUserId: number, secondUserId: number) {
 
     await this.validateUsersExist([firstUserId, secondUserId]);

@@ -3,6 +3,27 @@ import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class ChatRepository {
+    findChats(currentUserId: number) {
+        return this.prismaService.chat.findMany({
+            where: {
+                members: {
+                    some: { userId: currentUserId }
+                }
+            },
+            include: {
+                members: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                username: true,
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
     constructor(private readonly prismaService: PrismaService) { }
     
 
