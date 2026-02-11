@@ -2,7 +2,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ReadRepository } from './read.repository';
 import { ChatNotFoundException } from 'src/chat/exceptions/chat-not-found.exception';
-import { NotChatMemberException } from 'src/message/exceptions/not-chat-mebmer.exception';
 @Injectable()
 export class ReadService {
   private readonly logger = new Logger(ReadService.name);

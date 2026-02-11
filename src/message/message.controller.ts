@@ -33,10 +33,12 @@ export class MessageController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async getChatMessages(
+    @Authorized('id') userId: number,
     @Param('chatId') chatId: number,
-    @Query() paginationDto: MessagePaginationDto
+    @Query() paginationDto: MessagePaginationDto,
   ) {
     const result = await this.messageService.getChatMessages(
+      userId,
       chatId,
       paginationDto
     );

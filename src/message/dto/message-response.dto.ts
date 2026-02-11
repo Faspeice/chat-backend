@@ -10,13 +10,12 @@ export class MessageSenderDto {
 export class MessageResponseDto {
 
   id: number;
-
-
+  
   content: string;
-
 
   sentAt: Date;
 
+  isRead: boolean; //Текущим пользователем
 
   sender: MessageSenderDto;
 }

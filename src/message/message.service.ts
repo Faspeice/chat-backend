@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { MessageRepository } from './message.repository';
 import { ChatNotFoundException } from 'src/chat/exceptions/chat-not-found.exception';
 import { MessagePaginationDto } from './dto/message-pagination.dto';
+import { plainToInstance } from 'class-transformer';
+import { MessageResponseDto } from './dto/message-response.dto';
 
 @Injectable()
 export class MessageService {
@@ -37,11 +39,11 @@ export class MessageService {
     }
   }
 
-   async createMessage(
+  async createMessage(
     userId: number,
     chatId: number,
     content: string
-  ){
+  ) {
     const numericChatId = Number(chatId);
     try {
       this.logger.log(
@@ -70,14 +72,17 @@ export class MessageService {
   }
 
   async getChatMessages(
+    userId: number,
     chatId: number,
     pagination: MessagePaginationDto
-  ){
+  ) {
+    const nummericUserId = Number(userId);
+    const numericChatId = Number(chatId);
     try {
       this.logger.log(
-        `Fetching messages for chat ${chatId} with pagination: page=${pagination.page}, limit=${pagination.limit}`
+        `Fetching messages for chat ${chatId} by ${nummericUserId} with pagination: page=${pagination.page}, limit=${pagination.limit}`
       );
-      const numericChatId = Number(chatId);
+
       const chatExists = await this.messageRepository.checkChatExists(numericChatId);
       if (!chatExists) {
         throw new ChatNotFoundException(numericChatId);
@@ -85,6 +90,23 @@ export class MessageService {
 
       const { messages, total } =
         await this.messageRepository.getChatMessages(numericChatId, pagination);
+
+      const messagesWithReadStatus = messages.map((msg) => {
+        const isRead =
+          msg.senderId === numericChatId ||
+          (msg.reads && msg.reads.some((read) => read.userId === numericChatId));
+
+        return plainToInstance(MessageResponseDto, {
+          id: msg.id,
+          content: msg.content,
+          sentAt: msg.sentAt,
+          sender: {
+            id: msg.sender.id,
+            username: msg.sender.username,
+          },
+          isRead,
+        });
+      });
 
       const paginationInfo = {
         page: pagination.page,
@@ -95,10 +117,10 @@ export class MessageService {
       this.logger.log(
         `Successfully fetched ${messages.length} messages for chat ${numericChatId}`
       );
-      return { messages, pagination: paginationInfo };
+      return { messages: messagesWithReadStatus, pagination: paginationInfo };
     } catch (error) {
       this.logger.error(
-        `Failed to fetch messages for chat $numericChatId}: ${error.message}`
+        `Failed to fetch messages for chat ${numericChatId}: ${error.message}`
       );
       throw error;
     }

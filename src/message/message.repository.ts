@@ -84,6 +84,9 @@ export class MessageRepository {
                 username: true,
               },
             },
+            reads: {
+              select: { userId: true}
+            }
           },
           orderBy: { sentAt: 'desc' },
           skip: skip,
