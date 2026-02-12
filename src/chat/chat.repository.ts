@@ -3,28 +3,37 @@ import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class ChatRepository {
-    findChats(currentUserId: number) {
-        return this.prismaService.chat.findMany({
-            where: {
-                members: {
-                    some: { userId: currentUserId }
-                }
+        constructor(private readonly prismaService: PrismaService) { }
+    async findChats(currentUserId: number) {
+    return this.prismaService.chat.findMany({
+      where: {
+        members: {
+          some: { userId: currentUserId },
+        },
+      },
+      include: {
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+              },
             },
-            include: {
-                members: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                username: true,
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-    constructor(private readonly prismaService: PrismaService) { }
+          },
+        },
+        messages: {
+          orderBy: { sentAt: 'desc' },
+          take: 1,
+          select: {
+            content: true,
+            sentAt: true,
+          },
+        },
+      },
+    });
+  }
+
     
 
     async findChatByUserIds(userIds: number[]) {
@@ -91,4 +100,33 @@ export class ChatRepository {
             }
         });
     }
+
+    async getUnreadCountsForChats(
+    currentUserId: number,
+    chatIds: number[],
+  ): Promise<Map<number, number>> {
+    if (chatIds.length === 0) {
+      return new Map<number, number>();
+    }
+
+    const grouped = await this.prismaService.message.groupBy({
+      by: ['chatId'],
+      where: {
+        chatId: { in: chatIds },
+        senderId: { not: currentUserId },
+        reads: {
+          none: {
+            userId: currentUserId,
+          },
+        },
+      },
+      _count: {
+        _all: true,
+      },
+    });
+
+    return new Map<number, number>(
+      grouped.map((item) => [item.chatId, item._count._all]),
+    );
+  }
 }
