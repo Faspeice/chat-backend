@@ -1,4 +1,3 @@
-// utils/time.utils.ts
 export function parseDurationToMs(duration: string): number {
   const match = duration.match(/^(\d+(?:\.\d+)?)\s*([dhms])?$/i);
   
