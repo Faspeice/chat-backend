@@ -1,4 +1,3 @@
-// src/read/read.service.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { ReadRepository } from './read.repository';
 import { ChatNotFoundException } from 'src/chat/exceptions/chat-not-found.exception';
@@ -20,5 +19,7 @@ export class ReadService {
     await this.readRepository.markAllMessagesAsRead(nummericUserId, numericChatId);
 
     this.logger.log(`Successfully marked chat ${numericChatId} as read for user ${nummericUserId}`);
+
+    return true;
   }
 }

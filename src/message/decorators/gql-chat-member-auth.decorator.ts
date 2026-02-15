@@ -1,9 +1,9 @@
-import { JwtGuard } from "src/auth/guards/auth.guard";
 import { ChatMemberGuard } from "../guards/chat-member.guard";
 import { applyDecorators, UseGuards } from "@nestjs/common";
+import { GqlJwtGuard } from "src/auth/guards/gql-jwt.guard";
 
-export function ChatMemberAuth() {
+export function GqlChatMemberAuth() {
   return applyDecorators(
-    UseGuards(JwtGuard, ChatMemberGuard)  
+    UseGuards(GqlJwtGuard, ChatMemberGuard)  
   );
 }

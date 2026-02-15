@@ -1,10 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 
+@ObjectType()
 export class ChatMebmerDto {
   @ApiProperty({ description: 'User ID.', example: 1 })
+  @Field(() => Int)
   id: number;
 
   @ApiProperty({ description: 'Username.', example: 'john_doe' })
+  @Field(() => String)
   username: string;
 
   @ApiProperty({
@@ -13,6 +17,7 @@ export class ChatMebmerDto {
     type: String,
     format: 'date-time',
   })
+  @Field(() => Date)
   joinedAt: Date;
 
   constructor(id: number, username: string, joinedAt: Date) {

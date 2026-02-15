@@ -45,7 +45,7 @@ export class AuthService {
       },
     });
 
-    return  this.auth(res,user.id.toString());
+    return  this.auth(res,user.id);
   }
 
   async login(res: Response,dto: LoginRequest) {
@@ -70,7 +70,7 @@ export class AuthService {
         throw new NotFoundException('User not found');
     }
 
-    return this.auth(res,user.id.toString());
+    return this.auth(res,user.id);
 }
 
 
@@ -100,7 +100,7 @@ async refresh(req: Request, res: Response) {
         throw new NotFoundException('User not found');
     }
 
-    return this.auth(res,user.id.toString());
+    return this.auth(res,user.id);
     }
 }
 
@@ -109,7 +109,7 @@ async logout(res: Response) {
   
 }
 
-async validate(id: string) {
+async validate(id: number) {
   const userId = Number(id);
   if (isNaN(userId)) {
     throw new BadRequestException('Invalid user ID');
@@ -128,14 +128,14 @@ async validate(id: string) {
 }
 
 
-private auth (res: Response, id: string) {
+private auth (res: Response, id: number) {
   const {accessToken, refreshToken} = this.generateTokens(id);
   const ttlMs = parseDurationToMs(this.JWT_REFRESH_TOKEN_TTL);
   this.setCookie(res, refreshToken, new Date(Date.now() + ttlMs));;
   return {accessToken};
   
 }
-  private generateTokens(id: string) {
+  private generateTokens(id: number) {
     const payload: JwtPayload = { id };
 
     const accessToken = this.jwtService.sign(payload, {

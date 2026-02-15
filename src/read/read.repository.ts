@@ -1,4 +1,3 @@
-// src/read/read.repository.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -9,7 +8,6 @@ export class ReadRepository {
 
   async markAllMessagesAsRead(userId: number, chatId: number){
 
-    // Получаем все непрочитанные сообщения в чате от других пользователей
     const unreadMessages = await this.prismaService.message.findMany({
   where: {
     chatId: chatId,
@@ -27,8 +25,7 @@ export class ReadRepository {
 
 
     const messageIds = unreadMessages.map(m => m.id);
-
-    // Вставляем записи в message_reads
+    
     await this.prismaService.$transaction(
       messageIds.map(messageId =>
         this.prismaService.messageRead.create({

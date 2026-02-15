@@ -13,9 +13,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             ignoreExpiration: false,
             secretOrKey: ConfigService.getOrThrow<string>('JWT_SECRET'),
             algorithms: ['HS256'],
-    });
-}
-        
+        });
+    }
+
     async validate(payload: JwtPayload) {
         return this.authService.validate(payload.id);
     }

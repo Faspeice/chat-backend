@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AllExceptionsFilter } from './filters/http-exception.filter';
+import { HttpAllExceptionsFilter } from './filters/http-exception.filter';
+import { GqlAllExceptionsFilter } from './filters/gql-exception.filter';
 
 @Module({
-  exports: [AllExceptionsFilter],
+  exports: [HttpAllExceptionsFilter, GqlAllExceptionsFilter],
 })
 export class CommonModule {}

@@ -4,9 +4,12 @@ import {
 	MinLength,
 } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 
+@InputType()
 export class RegisterRequest {
-
+  
+@Field(() => String)
 @ApiProperty({
   description: 'Unique username.',
   example: 'john_doe',
@@ -15,6 +18,7 @@ export class RegisterRequest {
 @IsNotEmpty({ message: 'Username is required.' })
 username: string;
 
+@Field(() => String)
 @ApiProperty({
   description: 'User password (minimum 6 characters).',
   example: 'secret123',
