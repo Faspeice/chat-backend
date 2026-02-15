@@ -35,6 +35,6 @@ export class AuthResolver {
     @GqlAuthorization()
     @Query(() => Int)
     async me(@GqlAuthorized('id') id: string) {
-        return { id }
+        return id
     }
 }
