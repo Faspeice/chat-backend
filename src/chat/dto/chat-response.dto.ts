@@ -57,10 +57,15 @@ export class ChatResponse {
 
 
 }
+
+@ObjectType()
 export class CreateChatResponse {
+
+  @Field(() => Int)
   @ApiProperty({ description: 'Chat ID.', example: 10 })
   id: number;
 
+  @Field(() => [ChatMebmerDto])
   @ApiProperty({
     description: 'Chat participants.',
     type: () => [ChatMebmerDto],

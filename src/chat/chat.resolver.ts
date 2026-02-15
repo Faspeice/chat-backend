@@ -1,6 +1,6 @@
 import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { ChatService } from './chat.service';
-import { ChatResponse } from './dto/chat-response.dto';
+import { ChatResponse, CreateChatResponse } from './dto/chat-response.dto';
 import { GqlAuthorized } from 'src/auth/decorators/gql-authorized.decorator';
 import { GqlAuthorization } from 'src/auth/decorators/gql-authorization.decorator';
 import { CreateChatRequest } from './dto/chat-request.dto';
@@ -10,7 +10,7 @@ export class ChatResolver {
   constructor(private readonly chatService: ChatService) {}
 
   @GqlAuthorization()
-  @Mutation(() => ChatResponse, { name: 'createChat' })
+  @Mutation(() => CreateChatResponse, { name: 'createChat' })
   async createChatWithUser(
       @GqlAuthorized('id') currentUserId: number,
       @Args('data') input: CreateChatRequest
