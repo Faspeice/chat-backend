@@ -25,7 +25,7 @@
 1. Переименуйте скопированный файл:
 
 ```bash
-   mv .env.example .env
+   mv .env.example .env.docker
    ```
 
 2. Отредактируйте .env при необходимости
