@@ -4,14 +4,16 @@ import { ChatResponse, CreateChatResponse } from './dto/chat-response.dto';
 import { ChatMebmerDto } from './dto/chat-member.dto';
 import { UserNotFoundException } from 'src/user/exceptions/user-not-found.exception';
 import { UserRepository } from 'src/user/user.repository';
+import { ChatData } from './graphql/chat.data';
 
 @Injectable()
 export class ChatService {
   constructor(private readonly chatRepository: ChatRepository, private readonly userRepository: UserRepository) { }
-  async getChats(currentUserId: number) {
-    try {
-      const chats = await this.chatRepository.findChats(currentUserId);
+  private readonly logger = new Logger(ChatService.name);
 
+  async getChatsForRest(currentUserId: number): Promise<ChatResponse[]> {
+    try {
+      const chats = await this.chatRepository.findChats(currentUserId, true);
       const chatIds = chats.map((chat) => chat.id);
       const unreadMap = await this.chatRepository.getUnreadCountsForChats(
         currentUserId,
@@ -27,10 +29,8 @@ export class ChatService {
               member.joinedAt,
             ),
         );
-
-        const lastMessage = chat.messages[0];
+        const lastMessage = chat.messages?.[0];
         const unreadCount = unreadMap.get(chat.id) ?? 0;
-
         return new ChatResponse(
           chat.id,
           members,
@@ -39,13 +39,16 @@ export class ChatService {
           unreadCount,
         );
       });
-    }
-    catch (e) {
+    } catch (e) {
       this.logger.error("Failed to get chats");
       throw e;
     }
   }
-  private readonly logger = new Logger(ChatService.name);
+
+  async getChatsForGraphQL(currentUserId: number): Promise<ChatData[]> {
+    const chats = await this.chatRepository.findChats(currentUserId, false);
+    return chats as ChatData[];
+  }
 
   async createChat(firstUserId: number, secondUserId: number) {
 

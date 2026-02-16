@@ -1,6 +1,6 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { UserService } from './user.service';
-import { UserResponse } from './dto/user-response.dto';
+import { GqlUser } from './graphql/user.model';
 import { GqlAuthorization } from 'src/auth/decorators/gql-authorization.decorator';
 import { GqlAuthorized } from 'src/auth/decorators/gql-authorized.decorator';
 
@@ -8,13 +8,14 @@ import { GqlAuthorized } from 'src/auth/decorators/gql-authorized.decorator';
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  @Query(() => [UserResponse], { name: 'searchUsers' })
+  @Query(() => [GqlUser], { name: 'searchUsers' })
   @GqlAuthorization()
   async searchUsers(
     @Args('username', { type: () => String }) username: string,
     @GqlAuthorized('id') currentUserId: number,
-  ): Promise<UserResponse[]> {
-    return this.userService.findUsersByUsername(username, currentUserId);
+  ): Promise<GqlUser[]> {
+    const users = await this.userService.findUsersByUsername(username, currentUserId);
+    return users.map((u) => ({ id: u.id, username: u.username }));
   }
 }
 

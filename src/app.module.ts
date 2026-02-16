@@ -7,7 +7,7 @@ import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
 import { ReadModule } from './read/read.module';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloDriver} from '@nestjs/apollo';
 import { getGraphQlConfig } from './config/graphql.config';
 
 @Module({
