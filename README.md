@@ -1,7 +1,7 @@
 # Long Polling чат на базе Nest.js
 
 Веб-приложение чат с использованием **long polling** для реального времени.
-Реализовано на базе **Nest.js**, **PostgreSQL**, **Prisma**, **GraphQL/REST**
+Реализовано на базе **Nest.js**, **PostgreSQL**, **Prisma**, **REST/GraphQL**
 
 ---
 
@@ -35,13 +35,13 @@
    Для локальной разработки и тестирования:
 
    ```bash
-docker-compose build
+      docker-compose build
    ```
    ```bash
-docker-compose up -d
+      docker-compose up -d
    ```
 
-API будет доступен на http://localhost:3000
 Swagger документация будет доступна на http://localhost:3000/docs
+
 GraphQL playground будет доступен на http://localhost:3000/graphql
 
